@@ -1,7 +1,7 @@
 import requests
 import json
 
-DATA_URL = "https://fantasy.premierleague.com/drf/bootstrap-static"
+DATA_URL = "https://fantasy.premierleague.com/api/bootstrap-static"
 DATA_FILENAME = "data/player_data_18_19.json"
 
 # Download all player data and write file
