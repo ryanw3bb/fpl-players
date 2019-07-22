@@ -70,7 +70,8 @@ with open('data/gw_difficulty.csv', newline='') as csv_file, open(data_file) as 
     for element in json_data['elements']:
         if float(element['minutes']) > MIN_MINUTES_PLAYED and \
                 element['element_type'] in POSITIONS and \
-                element['now_cost'] <= MAX_VALUE * 10:
+                element['now_cost'] <= MAX_VALUE * 10 and \
+                element['team'] not in EXCLUDE_TEAMS:
             player_name = element['first_name'] + ' ' + element['second_name']
             data_dict[player_name] = get_estimated_points(element, csv_data)
 
