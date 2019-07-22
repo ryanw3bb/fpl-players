@@ -3,30 +3,36 @@ import json
 import math
 from get_data import get_player_data
 
+# Constants
+MAX_FDR = 5
+
+# Data range
+USE_LAST_SEASON = True
+GAME_WEEK_START = 1  # GW1 = 1
+GAME_WEEK_END = 6  # Inclusive
+
 # 1 = GK, 2 = DEF, 3 = MID, 4 = ATT
-USE_LAST_SEASON = False
 POSITIONS = [1, 2, 3, 4]
 EXCLUDE_TEAMS = []
 MAX_VALUE = 15
-GAME_WEEK_START = 8
-GAME_WEEK_END = 13
-MINIMUM_MINUTES_PLAYED = 100
+MINIMUM_MINUTES_PLAYED = 500
 
-# Price premium stuff
-COST_FACTORED = True
+# Price premium
+COST_FACTORED = False
 GK_DF_PRICE_MIN = 4
 MF_FW_PRICE_MIN = 4.5
+
 
 def get_estimated_points(player_data, difficulty_data):
     ppg = float(player_data['points_per_game'])
     team_id = player_data['team']
     estimated_points = 0
 
-    for i, row in enumerate(difficulty_data):
+    for i, fdr_row in enumerate(difficulty_data):
         if i == team_id:
-            data = row[0].split(',')
-            for j in range(1 + GAME_WEEK_START, 1 + GAME_WEEK_END):
-                match_difficulty = (2 - (float(data[j]) / 100) * 2)
+            data = fdr_row[0].split(',')
+            for j in range(1 + GAME_WEEK_START, 2 + GAME_WEEK_END):
+                match_difficulty = (MAX_FDR - float(data[j])) / (MAX_FDR / 2)
                 estimated_points += ppg * match_difficulty
             break
 
@@ -42,11 +48,12 @@ def get_estimated_points(player_data, difficulty_data):
 
     return round(estimated_points)
 
+
 if USE_LAST_SEASON:
-    data_file = 'data/player_data_17_18.json'
+    data_file = 'data/player_data_18_19.json'
 else:
     get_player_data()
-    data_file = 'data/player_data_18_19.json'
+    data_file = 'data/player_data_19_20.json'
 
 print(data_file)
 
