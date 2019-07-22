@@ -15,7 +15,7 @@ GAME_WEEK_END = 6  # Inclusive
 POSITIONS = [1, 2, 3, 4]
 EXCLUDE_TEAMS = []
 MAX_VALUE = 15
-MINIMUM_MINUTES_PLAYED = 500
+MIN_MINUTES_PLAYED = 500
 
 # Price premium
 COST_FACTORED = False
@@ -68,7 +68,7 @@ with open('data/gw_difficulty.csv', newline='') as csv_file, open(data_file) as 
     data_dict = dict()
 
     for element in json_data['elements']:
-        if float(element['minutes']) > MINIMUM_MINUTES_PLAYED and \
+        if float(element['minutes']) > MIN_MINUTES_PLAYED and \
                 element['element_type'] in POSITIONS and \
                 element['now_cost'] <= MAX_VALUE * 10:
             player_name = element['first_name'] + ' ' + element['second_name']

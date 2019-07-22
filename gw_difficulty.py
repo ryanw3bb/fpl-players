@@ -1,7 +1,7 @@
 import csv
 
-GAME_WEEK_START = 8
-GAME_WEEK_END = 13
+GAME_WEEK_START = 1
+GAME_WEEK_END = 6
 
 with open('data/gw_difficulty.csv', newline='') as csv_file:
     csv_data = []
@@ -15,7 +15,7 @@ with open('data/gw_difficulty.csv', newline='') as csv_file:
     for i, row in enumerate(csv_data):
         data = row[0].split(',')
         match_difficulty = 0
-        for j in range(1 + GAME_WEEK_START, 1 + GAME_WEEK_END):
+        for j in range(1 + GAME_WEEK_START, 2 + GAME_WEEK_END):
             match_difficulty += float(data[j])
 
         data_dict[data[0]] = round(match_difficulty)
