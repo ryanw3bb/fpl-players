@@ -3,7 +3,7 @@ import csv
 GAME_WEEK_START = 1
 GAME_WEEK_END = 6
 
-with open('data/gw_difficulty.csv', newline='') as csv_file:
+with open('data/gw_difficulty_19_20.csv', newline='') as csv_file:
     csv_data = []
     for row in csv.reader(csv_file, delimiter=' '):
         csv_data.append(row)
