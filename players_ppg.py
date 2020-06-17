@@ -1,15 +1,9 @@
-import csv
 import json
-import math
-from get_data import get_player_data
-
-# Constants
-MAX_FDR = 5
+from get_data import get_player_data, get_fixtures_data
 
 # Data range
-USE_LAST_SEASON = True
-GAME_WEEK_START = 3  # GW1 = 1
-GAME_WEEK_END = 6  # Inclusive
+GAME_WEEK_START = 39  # GW1 = 1
+GAME_WEEK_END = 39  # Inclusive
 
 # 1 = GK, 2 = DEF, 3 = MID, 4 = ATT
 POSITIONS = [1, 2, 3, 4]
@@ -17,54 +11,34 @@ EXCLUDE_TEAMS = []
 MAX_VALUE = 15
 MIN_MINUTES_PLAYED = 1000
 
-# Price premium
-COST_FACTORED = False
-GK_DF_PRICE_MIN = 4
-MF_FW_PRICE_MIN = 4.5
 
-
-def get_estimated_points(player_data, difficulty_data):
+def get_estimated_points(player_data, fixtures_data):
     ppg = float(player_data['points_per_game'])
     team_id = player_data['team']
     estimated_points = 0
 
-    for i, fdr_row in enumerate(difficulty_data):
-        if i == team_id:
-            data = fdr_row[0].split(',')
-            for j in range(1 + GAME_WEEK_START, 2 + GAME_WEEK_END):
-                match_difficulty = (MAX_FDR - float(data[j])) / (MAX_FDR / 2)
+    for event in fixtures_data:
+        if GAME_WEEK_START <= event['event'] <= GAME_WEEK_END:
+            if event['team_h'] == team_id:
+                match_difficulty = event['team_a_difficulty'] / event['team_h_difficulty']
                 estimated_points += ppg * match_difficulty
-            break
-
-    if COST_FACTORED:
-        if player_data['element_type'] < 2:
-            # GF / DF
-            price_min = GK_DF_PRICE_MIN
-        else:
-            # MF / FW
-            price_min = MF_FW_PRICE_MIN
-
-        estimated_points = math.sqrt((estimated_points ** 2) / math.sqrt(float(player_data['now_cost']) - price_min))
+            elif event['team_a'] == team_id:
+                match_difficulty = event['team_h_difficulty'] / event['team_a_difficulty']
+                estimated_points += ppg * match_difficulty
 
     return round(estimated_points)
 
 
-if USE_LAST_SEASON:
-    data_file = 'data/player_data_18_19.json'
-else:
-    get_player_data()
-    data_file = 'data/player_data_19_20.json'
+data_file = get_player_data()
+fixtures_file = get_fixtures_data()
 
-print(data_file)
+with open(fixtures_file) as fixtures, open(data_file) as data:
 
-with open('data/gw_difficulty_19_20.csv', newline='') as csv_file, open(data_file) as json_file:
-    # load match difficulty csv
-    csv_data = []
-    for row in csv.reader(csv_file, delimiter=' '):
-        csv_data.append(row)
+    # load fixtures data
+    fixture_data = json.load(fixtures)
 
-    # load player data json
-    json_data = json.load(json_file)
+    # load player data
+    json_data = json.load(data)
     data_dict = dict()
 
     for element in json_data['elements']:
@@ -73,7 +47,7 @@ with open('data/gw_difficulty_19_20.csv', newline='') as csv_file, open(data_fil
                 element['now_cost'] <= MAX_VALUE * 10 and \
                 element['team'] not in EXCLUDE_TEAMS:
             player_name = element['first_name'] + ' ' + element['second_name']
-            data_dict[player_name] = get_estimated_points(element, csv_data)
+            data_dict[player_name] = get_estimated_points(element, fixture_data)
 
 
 # sort and print list
