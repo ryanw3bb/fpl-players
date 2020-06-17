@@ -5,6 +5,6 @@ https://fantasy.premierleague.com/
 
 ### Usage
 
-Run ```gw_difficulty.py``` for teams ranked by gameweek difficulty.
+Run ```players_ppg.py``` to get players ranked by predicted scores for specified gameweeks. 
 
-Run ```players.py``` for players ranked by predicted scores for specified gameweeks. 
+Run ```gw_difficulty.py``` to get teams ranked by gameweek difficulty.
