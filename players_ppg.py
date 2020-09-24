@@ -1,15 +1,22 @@
+"""
+List players based on their estimated return from next fixtures in range
+GAME_WEEK_START to GAME_WEEK_END
+Uses fixture difficulty rating and ppg (from either this season or last season)
+"""
+
 import json
 from get_data import get_player_data, get_fixtures_data
 
 # Data range
-GAME_WEEK_START = 39  # GW1 = 1
-GAME_WEEK_END = 39  # Inclusive
+GAME_WEEK_START = 3  # GW1 = 1
+GAME_WEEK_END = 8  # Inclusive GW38 = 38
 
 # 1 = GK, 2 = DEF, 3 = MID, 4 = ATT
 POSITIONS = [1, 2, 3, 4]
 EXCLUDE_TEAMS = []
 MAX_VALUE = 15
-MIN_MINUTES_PLAYED = 1000
+MIN_MINUTES_PLAYED = 100
+USE_LAST_SEASON = False
 
 
 def get_estimated_points(player_data, fixtures_data):
@@ -18,18 +25,19 @@ def get_estimated_points(player_data, fixtures_data):
     estimated_points = 0
 
     for event in fixtures_data:
-        if GAME_WEEK_START <= event['event'] <= GAME_WEEK_END:
-            if event['team_h'] == team_id:
-                match_difficulty = event['team_a_difficulty'] / event['team_h_difficulty']
-                estimated_points += ppg * match_difficulty
-            elif event['team_a'] == team_id:
-                match_difficulty = event['team_h_difficulty'] / event['team_a_difficulty']
-                estimated_points += ppg * match_difficulty
+        if isinstance(event['event'], int):
+            if GAME_WEEK_START <= event['event'] <= GAME_WEEK_END:
+                if event['team_h'] == team_id:
+                    match_difficulty = event['team_a_difficulty'] / event['team_h_difficulty']
+                    estimated_points += ppg * match_difficulty
+                elif event['team_a'] == team_id:
+                    match_difficulty = event['team_h_difficulty'] / event['team_a_difficulty']
+                    estimated_points += ppg * match_difficulty
 
     return round(estimated_points)
 
 
-data_file = get_player_data()
+data_file = get_player_data(USE_LAST_SEASON)
 fixtures_file = get_fixtures_data()
 
 with open(fixtures_file) as fixtures, open(data_file) as data:

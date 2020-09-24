@@ -1,10 +1,16 @@
+"""
+List teams based on the combined difficulty of fixtures between
+GAME_WEEK_START and GAME_WEEK_END
+Lower number means easier fixtures
+"""
+
 import json
 from get_data import get_player_data, get_fixtures_data
 
-GAME_WEEK_START = 39
-GAME_WEEK_END = 39
+GAME_WEEK_START = 3
+GAME_WEEK_END = 8
 
-data_file = get_player_data()
+data_file = get_player_data(False)
 fixtures_file = get_fixtures_data()
 
 with open(fixtures_file) as fixtures, open(data_file) as data:
@@ -14,16 +20,17 @@ with open(fixtures_file) as fixtures, open(data_file) as data:
     data_dict = dict()
 
     for event in fixtures_data:
-        if GAME_WEEK_START <= event['event'] <= GAME_WEEK_END:
-            if event['team_h'] in data_dict:
-                data_dict[event['team_h']] += event['team_h_difficulty']
-            else:
-                data_dict[event['team_h']] = event['team_h_difficulty']
+        if isinstance(event['event'], int):
+            if GAME_WEEK_START <= event['event'] <= GAME_WEEK_END:
+                if event['team_h'] in data_dict:
+                    data_dict[event['team_h']] += event['team_h_difficulty']
+                else:
+                    data_dict[event['team_h']] = event['team_h_difficulty']
 
-            if event['team_a'] in data_dict:
-                data_dict[event['team_a']] += event['team_a_difficulty']
-            else:
-                data_dict[event['team_a']] = event['team_a_difficulty']
+                if event['team_a'] in data_dict:
+                    data_dict[event['team_a']] += event['team_a_difficulty']
+                else:
+                    data_dict[event['team_a']] = event['team_a_difficulty']
 
     # convert team ids to names
     json_data = json.load(data)
