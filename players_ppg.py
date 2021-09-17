@@ -8,19 +8,23 @@ import json
 from get_data import get_player_data, get_fixtures_data
 
 # Data range
-GAME_WEEK_START = 3  # GW1 = 1
-GAME_WEEK_END = 8  # Inclusive GW38 = 38
+GAME_WEEK_START = 5  # GW1 = 1
+GAME_WEEK_END = 7  # Inclusive GW38 = 38
 
 # 1 = GK, 2 = DEF, 3 = MID, 4 = ATT
 POSITIONS = [1, 2, 3, 4]
 EXCLUDE_TEAMS = []
 MAX_VALUE = 15
-MIN_MINUTES_PLAYED = 100
+MIN_MINUTES_PLAYED = 90
 USE_LAST_SEASON = False
+USE_FORM = False
 
 
 def get_estimated_points(player_data, fixtures_data):
-    ppg = float(player_data['points_per_game'])
+    if USE_FORM:
+        ppg = float(player_data['form'])
+    else:
+        ppg = float(player_data['points_per_game'])
     team_id = player_data['team']
     estimated_points = 0
 
